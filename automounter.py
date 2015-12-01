@@ -33,14 +33,17 @@ checkConnection = False
 
 while True:
   try:
-    # if urllib urlopen function fails. It skips the print and the variable change and goes straigth to the exception
+    # Check if url that was set is reachable.
     urllib.request.urlopen(url)
+    # If the connection has been false or not checked before. Mount drives.
     if checkConnection == False:
       print(str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + "Opened " + url + " successfully")
+    # If the drive is already mounted.
     else:
       print(str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + "Opened " + url + " successfully again. Did not retry to mount.")
     checkConnection = True
     time.sleep(float(timeToSleepSuccesfull * 60))
+  # If urlopen fails
   except urllib.error.URLError as err:
     print(str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + str(err))
     time.sleep(float(timeToSleep))
