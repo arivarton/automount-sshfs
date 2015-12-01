@@ -1,6 +1,7 @@
 import sys
 import urllib.request
 import time
+from subprocess import call
 
 # Default values for arguments
 url = "http://www.arivarton.com"
@@ -37,7 +38,8 @@ while True:
     urllib.request.urlopen(url)
     # If the connection has been false or not checked before. Mount drives.
     if checkConnection == False:
-      print(str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + "Opened " + url + " successfully")
+      print(str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + "Opened " + url + " successfully. Mounting drives")
+      call(["sshfs", "arivarto@arivarton.com:/home/arivarto/public_html/", "/home/arivarton/Development/UMG/"])
     # If the drive is already mounted.
     else:
       print(str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + "Opened " + url + " successfully again. Did not retry to mount.")
