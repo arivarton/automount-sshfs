@@ -42,13 +42,11 @@ for i in range(len(sys.argv)):
     i += 1
 
 count = 0
-timeAdded = 0
 
 while True:
     try:
         # Check if url that was set is reachable.
         urllib.request.urlopen(url)
-        timeAdded = 0
         # If the connection has been false or not checked before. Mount drives.
         if len(listdir(mountTo)) == 0:
             print(str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + "Opened " + url + " successfully. Mounting drives.")
