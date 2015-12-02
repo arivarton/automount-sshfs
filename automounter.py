@@ -34,8 +34,8 @@ for i in range(len(sys.argv)):
     elif sys.argv[i] == "-M":
         mountFrom = sys.argv[i + 1]
     # Where the share will be mounted from
-    elif sys.argv[i] == "-u":
-        user = sys.argv[i + 1]
+    elif sys.argv[i] == "-U":
+        userName = sys.argv[i + 1]
     # Where the share will be mounted from
     elif sys.argv[i] == "-f":
         fileShare = sys.argv[i + 1]
@@ -43,7 +43,6 @@ for i in range(len(sys.argv)):
 
 count = 0
 timeAdded = 0
-checkConnection = False
 
 while True:
     try:
@@ -52,8 +51,7 @@ while True:
         # If the connection has been false or not checked before. Mount drives.
         if len(listdir(mountTo)) == 0:
             print(str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + "Opened " + url + " successfully. Mounting drives.")
-            call(["sshfs", user + "@" + fileShare + ":" + mountFrom, mountTo])
-            checkConnection = True
+            call(["sshfs", userName + "@" + fileShare + ":" + mountFrom, mountTo])
         # If the drive is already mounted.
         else:
             print(str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + "Connection is up but the directory is already mounted.")
@@ -62,11 +60,8 @@ while True:
     except urllib.error.URLError as err:
         print(str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + str(err))
         time.sleep(float(timeToSleep))
-        if (((count * timeToSleep) >= (addTime * 60)) & (timeAdded != 1)):
+        if (((count * timeToSleep) >= (int(addTime) * 60)) & (timeAdded != 1)):
+            print("    " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + "Time to sleep has been changed to " + str(timeToAdd) + " minute(s).")
             timeToSleep = timeToAdd * 60
             timeAdded = 1
-            checkConnection = False
-    except:
-        print("Unexpected error:\n\n", sys.exc_info()[0])
-        break
     count += 1
