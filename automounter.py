@@ -11,35 +11,34 @@ timeToSleepSuccesfull = 2
 addTime = 5
 timeToAdd = 1
 
-for i in range(len(sys.argv)):
+for counter, argument in enumerate(sys.argv):
   # if url is set
-    if sys.argv[i] == "-u":
-        url = sys.argv[i + 1]
+    if argument == "-u":
+        url = sys.argv[counter + 1]
     # if timeToSleep is set
-    elif sys.argv[i] == "-t":
-        timeToSleep = sys.argv[i + 1]
+    elif argument == "-t":
+        timeToSleep = sys.argv[counter + 1]
     # Time to sleep after succesfull connection
-    elif sys.argv[i] == "-s":
-        timeToSleepSuccesfull = sys.argv[i + 1]
+    elif argument == "-s":
+        timeToSleepSuccesfull = sys.argv[counter + 1]
     # Minutes to wait until sleep timer gets set higher
-    elif sys.argv[i] == "-a":
-        addTime = sys.argv[i + 1]
+    elif argument == "-a":
+        addTime = sys.argv[counter + 1]
     # *Minutes* to sleep after the addition has been set
-    elif sys.argv[i] == "-T":
-        timeToAdd = sys.argv[i + 1]
+    elif argument == "-T":
+        timeToAdd = sys.argv[counter + 1]
     # Where the share should be mounted to
-    elif sys.argv[i] == "-m":
-        mountTo = sys.argv[i + 1]
+    elif argument == "-m":
+        mountTo = sys.argv[counter + 1]
     # Where the share will be mounted from
-    elif sys.argv[i] == "-M":
-        mountFrom = sys.argv[i + 1]
+    elif argument == "-M":
+        mountFrom = sys.argv[counter + 1]
     # Where the share will be mounted from
-    elif sys.argv[i] == "-U":
-        userName = sys.argv[i + 1]
+    elif argument == "-U":
+        userName = sys.argv[counter + 1]
     # Where the share will be mounted from
-    elif sys.argv[i] == "-f":
-        fileShare = sys.argv[i + 1]
-    i += 1
+    elif argument == "-f":
+        fileShare = sys.argv[counter + 1]
 
 count = 0
 
