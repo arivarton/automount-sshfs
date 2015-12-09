@@ -68,7 +68,7 @@ while True:
     except urllib.error.URLError as err:
         errorString = str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + str(err)
         print(errorString)
-        loggin.error(errorString)
+        logging.error(errorString)
         if (count * timeToSleep) >= (int(addTime) * 60):
             time.sleep(float(timeToAdd * 60))
         else:
