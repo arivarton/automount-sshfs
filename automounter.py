@@ -54,10 +54,10 @@ while True:
             infoString = str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + "Opened " + url + " successfully. Mounting drives."
             print(infoString)
             logging.info(infoString)
-            call(["sshfs", userName + "@" + fileShare + ":" + mountFrom, mountTo])
-            infoString = "sshfs " + userName + "@" + fileShare + ":" + mountFrom + " " + mountTo
-            print(str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + infoString)
-            logging.debug(str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + infoString)
+            callString = "sshfs", userName + "@" + fileShare + ":" + mountFrom, mountTo
+            call(callString)
+            print(str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + str(callString))
+            logging.debug(str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + str(callString))
         # If the drive is already mounted.
         else:
             infoString = str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + "Connection is up but the directory is already mounted."
