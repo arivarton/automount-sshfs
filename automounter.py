@@ -36,7 +36,7 @@ def main():
     mount(args)
 
 def mount(args):
-    logging.info("Mounting from: " + args.mount_directory + "\nto: " + args.file_directory)
+    logging.info("Mounting from: " + str(args.mount_directory) + "\nto: " + str(args.file_directory))
     count = 0
     while True:
         try:
