@@ -2,75 +2,63 @@ import sys
 import urllib.request
 import time
 import logging
+import argparse
 from subprocess import call
 from os import listdir
 
-logging.basicConfig(filename=".automount-sshfs.log",level=logging.DEBUG)
+# Setup log file
+FORMAT = logging.basicConfig(filename=".automount-sshfs.log", 
+        filemode='a',
+        format='%(asctime)s %(levelname)s: %(message)s',
+        level=logging.DEBUG, 
+        datefmt='%H:%M:%S')
+logger = logging.getLogger('automounter')
 
-# Default values for arguments
-url = "http://www.arivarton.com"
-timeToSleep = 10
-timeToSleepSuccesfull = 2
-addTime = 5
-timeToAdd = 1
+def main():
+    parser = argparse.ArgumentParser(description='''Mounts folders with ssh. Continues monitoring
+            for connection and mounts again if connection is lost.''',
+            epilog='By arivarton (http://www.arivarton.com)')
+    parser.add_argument('-u', '--url', type=str, help='URL used to check internet connection.',
+            default='http://www.arivarton.com/')
+    parser.add_argument('-t', '--initial_sleep', type=str, help='''Time to sleep before attempting
+            to connect again after failure.''', default=10)
+    parser.add_argument('-s', '--succesfull_sleep', type=str, help='''Time to sleep before
+            checking that the mount is still present.''', default=2)
+    parser.add_argument('-a', '--wait_sleep_addition', type=str, help='''Minutes to wait until
+            sleep timer gets set higher.''', default=5)
+    parser.add_argument('-T', '--add_sleep', type=str, help='Add time to sleep timer.', default=1)
+    parser.add_argument('-m', '--mount_directory', type=str, help='Mount location.')
+    parser.add_argument('-M', '--file_directory', type=str, help='''Location of the folder to
+            mount.''') 
+    parser.add_argument('-U', '--username', type=str, help='Username.')
+    parser.add_argument('-f', '--fileshare', type=str, help='Fileshare to mount from.')
+    args = parser.parse_args()
+    mount(args)
 
-for counter, argument in enumerate(sys.argv):
-  # if url is set
-    if argument == "-u":
-        url = sys.argv[counter + 1]
-    # if timeToSleep is set
-    elif argument == "-t":
-        timeToSleep = sys.argv[counter + 1]
-    # Time to sleep after succesfull connection
-    elif argument == "-s":
-        timeToSleepSuccesfull = sys.argv[counter + 1]
-    # Minutes to wait until sleep timer gets set higher
-    elif argument == "-a":
-        addTime = sys.argv[counter + 1]
-    # *Minutes* to sleep after the addition has been set
-    elif argument == "-T":
-        timeToAdd = sys.argv[counter + 1]
-    # Where the share should be mounted to
-    elif argument == "-m":
-        mountTo = sys.argv[counter + 1]
-    # Where the share will be mounted from
-    elif argument == "-M":
-        mountFrom = sys.argv[counter + 1]
-    # Where the share will be mounted from
-    elif argument == "-U":
-        userName = sys.argv[counter + 1]
-    # Where the share will be mounted from
-    elif argument == "-f":
-        fileShare = sys.argv[counter + 1]
+def mount(args):
+    count = 0
+    while True:
+        try:
+            # Check if url that was set is reachable.
+            urllib.request.urlopen(args.url)
+            # If the connection has been false or not checked before. Mount drives.
+            if len(listdir(args.mount_directory)) == 0:
+                logging.info("Opened " + args.url + " successfully. Mounting drives.")
+                callString = "sshfs", args.username + "@" + args.fileshare + ":" + args.file_directory, args.mount_directory
+                call(callString)
+                logging.debug(str(callString))
+            # If the drive is already mounted.
+            else:
+                logging.info("Connection is up but the directory is already mounted.")
+            time.sleep(float(args.succesfull_sleep * 60))
+        # If urlopen fails
+        except urllib.error.URLError as err:
+            logging.error(str(err))
+            if (count * args.initial_sleep) >= (int(args.wait_sleep_addition) * 60):
+                time.sleep(float(args.add_sleep * 60))
+            else:
+                time.sleep(float(args.initial_sleep))
+        count += 1
 
-count = 0
-
-while True:
-    try:
-        # Check if url that was set is reachable.
-        urllib.request.urlopen(url)
-        # If the connection has been false or not checked before. Mount drives.
-        if len(listdir(mountTo)) == 0:
-            infoString = str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + "Opened " + url + " successfully. Mounting drives."
-            print(infoString)
-            logging.info(infoString)
-            callString = "sshfs", userName + "@" + fileShare + ":" + mountFrom, mountTo
-            call(callString)
-            print(str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + str(callString))
-            logging.debug(str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + str(callString))
-        # If the drive is already mounted.
-        else:
-            infoString = str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + "Connection is up but the directory is already mounted."
-            print(infoString)
-            logging.info(infoString)
-        time.sleep(float(timeToSleepSuccesfull * 60))
-    # If urlopen fails
-    except urllib.error.URLError as err:
-        errorString = str(count) + " - " + time.strftime("%d.%m.%Y - %H:%M:%S: ") + str(err)
-        print(errorString)
-        logging.error(errorString)
-        if (count * timeToSleep) >= (int(addTime) * 60):
-            time.sleep(float(timeToAdd * 60))
-        else:
-            time.sleep(float(timeToSleep))
-    count += 1
+if __name__ == '__main__':
+    main()
