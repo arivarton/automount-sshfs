@@ -39,7 +39,7 @@ def mount(args):
         # If the connection has been false or not checked before. Mount drives.
         if len(listdir(args.mount_directory)) == 0:
             if call(['ping', args.fileshare, '-q', '-c', '1']):
-                logging.info("Failed to contact " + args.fileshare + " trying again in " + astr(int(sleep / 60)) + " minutes.")
+                logging.info("Failed to contact " + args.fileshare + " trying again in " + str(int(sleep / 60)) + " minutes.")
             else:
                 logging.info("Contacted " + args.fileshare + " successfully. Mounting drives.")
                 callString = "sshfs", args.username + "@" + args.fileshare + ":" + args.file_directory, args.mount_directory
