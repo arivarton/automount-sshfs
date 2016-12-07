@@ -33,14 +33,13 @@ def main():
     mount(args)
 
 def mount(args):
-    logging.info("Mounting from: " + str(args.mount_directory) + "\nto: " + str(args.file_directory))
     count = 0
     while True:
-        sleep = sleepCounter(count)
+        sleep = sleepCounter(args, count)
         # If the connection has been false or not checked before. Mount drives.
         if len(listdir(args.mount_directory)) == 0:
             if call(['ping', args.fileshare, '-q', '-c', '1']):
-                logging.info("Failed to contact " + args.fileshare + " trying again in " + args.succesfull_sleep + " minutes.")
+                logging.info("Failed to contact " + args.fileshare + " trying again in " + astr(int(sleep / 60)) + " minutes.")
             else:
                 logging.info("Contacted " + args.fileshare + " successfully. Mounting drives.")
                 callString = "sshfs", args.username + "@" + args.fileshare + ":" + args.file_directory, args.mount_directory
@@ -49,14 +48,13 @@ def mount(args):
                 count = 0
         # If the drive is already mounted.
         else:
-            logging.info('''Connection is up but the directory is already mounted, trying again
-                    in ''' + sleep / 60 + ' minutes.')
+            logging.info('Connection is up but the directory is already mounted, trying again in ' + str(int(sleep / 60)) + ' minutes.')
         time.sleep(sleep)
         count += 1
 
 # If the script has run longer than wait_sleep_addition variable is set to
 # increase the sleep variable
-def sleepCounter(count):
+def sleepCounter(args, count):
     if (count * (args.initial_sleep * 60)) >= (int(args.wait_sleep_addition) * 60):
         return float((args.initial_sleep * 60) + (args.add_sleep * 60))
     else:
